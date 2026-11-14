@@ -6,8 +6,9 @@ class Settings(BaseModel):
     PROJECT_VERSION: str = "1.0.0"
     API_V1_STR: str = "/api"
     
-    # Database: Default to local SQLite, easily overridden with PostgreSQL
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./finsight.db")
+    # Database: In Vercel serverless environment root is read-only, default to /tmp
+    default_sqlite: str = "sqlite:////tmp/finsight.db" if os.getenv("VERCEL") == "1" else "sqlite:///./finsight.db"
+    DATABASE_URL: str = os.getenv("DATABASE_URL", default_sqlite)
     
     # Security
     SECRET_KEY: str = os.getenv("SECRET_KEY", "finsight-super-secret-production-key-2026-pk")
