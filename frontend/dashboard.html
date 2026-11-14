@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — FinSight</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <!-- Chart.js CDN with safe fallback -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="brand-logo">
+          <div class="brand-icon">F</div>
+          <div>
+            <div class="brand-name">Fin<span>Sight</span></div>
+            <div class="business-tag" id="sidebar-business-name">Loading...</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Operations</div>
+        <a href="dashboard.html" class="nav-item active">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="customers.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>Customers & Accounts</span>
+        </a>
+        <a href="invoices.html" class="nav-item">
+          <span class="nav-icon">📄</span>
+          <span>Invoices</span>
+        </a>
+        <a href="payments.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payments & PDCs</span>
+        </a>
+        <a href="inventory.html" class="nav-item">
+          <span class="nav-icon">📦</span>
+          <span>Inventory & Stock</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence</div>
+        <a href="reconciliation.html" class="nav-item">
+          <span class="nav-icon">⚡</span>
+          <span>Reconciliation</span>
+        </a>
+        <a href="simulator.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>Cash Simulator</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">📑</span>
+          <span>Financial Reports</span>
+        </a>
+
+        <div class="nav-section-title">System</div>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-avatar" id="sidebar-user-avatar">MU</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-user-name">Muhammad Usman</div>
+            <div class="user-role" id="sidebar-user-role">ADMIN</div>
+          </div>
+          <button class="btn-logout" id="btn-logout" title="Sign Out">🚪</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="mobile-menu-toggle">☰</button>
+          <div>
+            <h1 class="page-title">Executive Dashboard</h1>
+            <p class="page-subtitle">Real-time receivables overview & automated collection intelligence</p>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="currency-badge">Currency: PKR (Rs.)</div>
+          <a href="invoices.html" class="btn btn-secondary btn-sm">+ New Invoice</a>
+          <a href="payments.html" class="btn btn-primary btn-sm">+ Record Payment</a>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <!-- KPI Cards Grid -->
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-receivables">
+            <div class="kpi-header">
+              <span class="kpi-label">Total Receivables</span>
+              <div class="kpi-icon">💰</div>
+            </div>
+            <div class="kpi-value" id="kpi-receivables">Loading...</div>
+            <div class="kpi-meta">Open customer ledger balances</div>
+          </div>
+
+          <div class="kpi-card kpi-collections">
+            <div class="kpi-header">
+              <span class="kpi-label">Collections (This Month)</span>
+              <div class="kpi-icon">📈</div>
+            </div>
+            <div class="kpi-value" id="kpi-collections">Loading...</div>
+            <div class="kpi-meta">Received via Raast / Bank / Cash</div>
+          </div>
+
+          <div class="kpi-card kpi-overdue">
+            <div class="kpi-header">
+              <span class="kpi-label">Overdue Balance</span>
+              <div class="kpi-icon">⚠️</div>
+            </div>
+            <div class="kpi-value" id="kpi-overdue">Loading...</div>
+            <div class="kpi-meta">Past contractual credit terms</div>
+          </div>
+
+          <div class="kpi-card kpi-unallocated">
+            <div class="kpi-header">
+              <span class="kpi-label">Unallocated Cash</span>
+              <div class="kpi-icon">⚡</div>
+            </div>
+            <div class="kpi-value" id="kpi-unallocated">Loading...</div>
+            <div class="kpi-meta">Received funds waiting for matching</div>
+          </div>
+        </div>
+
+        <!-- AI Financial Intelligence Widget -->
+        <div class="ai-intelligence-card">
+          <div class="ai-header">
+            <div class="ai-title-wrap">
+              <span class="ai-badge">AI Financial Intelligence</span>
+              <h3 style="font-size:1.15rem; font-weight:700;">Receivables Risk & Action Matrix</h3>
+            </div>
+            <div class="health-score-pill">
+              <span style="font-size:0.8rem; color:#cbd5e1;">Health Score:</span>
+              <span class="score-num" id="ai-health-score">--/100</span>
+              <span id="ai-health-status" style="font-size:0.75rem; color:#94a3b8;">Analyzing</span>
+            </div>
+          </div>
+          <div class="ai-insights-list" id="ai-insights-list">
+            <div class="insight-item">
+              <p>Analyzing invoice payment velocity and debtor exposure...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="card-header">
+              <h3 class="card-title">Cash Flow: Billed vs Collected (Last 6 Months)</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="cashFlowChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="card-header">
+              <h3 class="card-title">Aging Distribution</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="agingChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activities Card -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Recent Financial Audit Trail</h3>
+            <a href="reports.html" class="btn btn-secondary btn-sm">Full Report ➔</a>
+          </div>
+          <div class="activity-list" id="recent-activities-list">
+            <p style="color:var(--text-muted)">Loading recent transactions...</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/validation.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cash Flow Simulator — FinSight</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="brand-logo">
+          <div class="brand-icon">F</div>
+          <div>
+            <div class="brand-name">Fin<span>Sight</span></div>
+            <div class="business-tag" id="sidebar-business-name">Loading...</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Operations</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="customers.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>Customers & Accounts</span>
+        </a>
+        <a href="invoices.html" class="nav-item">
+          <span class="nav-icon">📄</span>
+          <span>Invoices</span>
+        </a>
+        <a href="payments.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payments & PDCs</span>
+        </a>
+        <a href="inventory.html" class="nav-item">
+          <span class="nav-icon">📦</span>
+          <span>Inventory & Stock</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence</div>
+        <a href="reconciliation.html" class="nav-item">
+          <span class="nav-icon">⚡</span>
+          <span>Reconciliation</span>
+        </a>
+        <a href="simulator.html" class="nav-item active">
+          <span class="nav-icon">🎯</span>
+          <span>Cash Simulator</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">📑</span>
+          <span>Financial Reports</span>
+        </a>
+
+        <div class="nav-section-title">System</div>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-avatar" id="sidebar-user-avatar">MU</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-user-name">Muhammad Usman</div>
+            <div class="user-role" id="sidebar-user-role">ADMIN</div>
+          </div>
+          <button class="btn-logout" id="btn-logout" title="Sign Out">🚪</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="mobile-menu-toggle">☰</button>
+          <div>
+            <h1 class="page-title">Liquidity & Cash Flow Stress Simulator</h1>
+            <p class="page-subtitle">Model distributor collection delays, recovery rates, and bad-debt scenarios</p>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-primary btn-sm" onclick="runSimulator()">
+            🔄 Recalculate Simulation
+          </button>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <!-- Interactive Sliders Grid -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:16px; margin-bottom:24px;">
+          <!-- Slider 1 -->
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-title">On-Time Collection Rate</span>
+              <span class="slider-value-display" id="val-collection-rate">80%</span>
+            </div>
+            <div class="slider-desc">% of payments collected within contractual term</div>
+            <input type="range" id="sim-collection-rate" min="20" max="100" value="80" step="5" />
+          </div>
+
+          <!-- Slider 2 -->
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-title">Average Collection Delay</span>
+              <span class="slider-value-display" id="val-delay-days">15 Days</span>
+            </div>
+            <div class="slider-desc">Additional days late accounts take to settle</div>
+            <input type="range" id="sim-delay-days" min="0" max="60" value="15" step="5" />
+          </div>
+
+          <!-- Slider 3 -->
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-title">Default / Bad Debt Risk</span>
+              <span class="slider-value-display" id="val-default-rate">5%</span>
+            </div>
+            <div class="slider-desc">Projected uncollectible retailer debt</div>
+            <input type="range" id="sim-default-rate" min="0" max="30" value="5" step="1" />
+          </div>
+
+          <!-- Slider 4 -->
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-title">Forecast Horizon</span>
+              <span class="slider-value-display" id="val-horizon-weeks">6 Weeks</span>
+            </div>
+            <div class="slider-desc">Forward-looking projection timeline</div>
+            <input type="range" id="sim-horizon-weeks" min="2" max="12" value="6" step="1" />
+          </div>
+        </div>
+
+        <!-- Simulation Result Metrics -->
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-receivables">
+            <div class="kpi-header">
+              <span class="kpi-label">Open Receivables Pool</span>
+              <div class="kpi-icon">📋</div>
+            </div>
+            <div class="kpi-value" id="sim-total-receivables">Loading...</div>
+            <div class="kpi-meta">Subject to stress simulation</div>
+          </div>
+
+          <div class="kpi-card kpi-collections">
+            <div class="kpi-header">
+              <span class="kpi-label">Simulated Recoverable Cash</span>
+              <div class="kpi-icon">💵</div>
+            </div>
+            <div class="kpi-value" id="sim-recoverable-cash" style="color:var(--accent);">Loading...</div>
+            <div class="kpi-meta">Expected realization in cash</div>
+          </div>
+
+          <div class="kpi-card kpi-unallocated">
+            <div class="kpi-header">
+              <span class="kpi-label">Projected Shortfall</span>
+              <div class="kpi-icon">⏳</div>
+            </div>
+            <div class="kpi-value" id="sim-shortfall" style="color:var(--warning);">Loading...</div>
+            <div class="kpi-meta">Liquidity gap vs contractual terms</div>
+          </div>
+
+          <div class="kpi-card kpi-overdue">
+            <div class="kpi-header">
+              <span class="kpi-label">Potential Bad Debt</span>
+              <div class="kpi-icon">⚠️</div>
+            </div>
+            <div class="kpi-value" id="sim-bad-debt" style="color:var(--danger);">Loading...</div>
+            <div class="kpi-meta">Estimated credit write-off</div>
+          </div>
+        </div>
+
+        <!-- Simulation Comparison Chart -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Cash Flow Trajectory: Contractual Baseline vs Simulated Scenario</h3>
+              <p style="font-size:0.8rem; color:var(--text-muted)">Visualizing the liquidity impact of retailer payment delays on inventory procurement</p>
+            </div>
+          </div>
+          <div class="chart-container" style="height:340px;">
+            <canvas id="simulationChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Strategic Recommendations -->
+        <div class="card" style="border-left: 4px solid var(--primary);">
+          <div class="card-header">
+            <h3 class="card-title">💡 Strategic Working Capital Advisory</h3>
+          </div>
+          <ul id="sim-recommendations-list" style="list-style:none; padding-left:0; font-size:0.92rem; color:var(--text-main);">
+            <li>Analyzing liquidity scenarios...</li>
+          </ul>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/validation.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/simulator.js"></script>
+</body>
+</html>

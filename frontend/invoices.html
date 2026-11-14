@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoices — FinSight</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="brand-logo">
+          <div class="brand-icon">F</div>
+          <div>
+            <div class="brand-name">Fin<span>Sight</span></div>
+            <div class="business-tag" id="sidebar-business-name">Loading...</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Operations</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="customers.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>Customers & Accounts</span>
+        </a>
+        <a href="invoices.html" class="nav-item active">
+          <span class="nav-icon">📄</span>
+          <span>Invoices</span>
+        </a>
+        <a href="payments.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payments & PDCs</span>
+        </a>
+        <a href="inventory.html" class="nav-item">
+          <span class="nav-icon">📦</span>
+          <span>Inventory & Stock</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence</div>
+        <a href="reconciliation.html" class="nav-item">
+          <span class="nav-icon">⚡</span>
+          <span>Reconciliation</span>
+        </a>
+        <a href="simulator.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>Cash Simulator</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">📑</span>
+          <span>Financial Reports</span>
+        </a>
+
+        <div class="nav-section-title">System</div>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-avatar" id="sidebar-user-avatar">MU</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-user-name">Muhammad Usman</div>
+            <div class="user-role" id="sidebar-user-role">ADMIN</div>
+          </div>
+          <button class="btn-logout" id="btn-logout" title="Sign Out">🚪</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="mobile-menu-toggle">☰</button>
+          <div>
+            <h1 class="page-title">Accounts Receivable Invoices</h1>
+            <p class="page-subtitle">Track wholesale shipments, bills, and overdue payment collections</p>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-primary btn-sm" onclick="openModal('modal-create-invoice')">
+            + Create New Invoice
+          </button>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <div class="card">
+          <!-- Filters -->
+          <div class="filter-bar">
+            <div class="search-input-group">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="search-invoice" class="search-input" placeholder="Search invoice # or customer name..." />
+            </div>
+            <div class="filter-actions">
+              <select id="filter-status" class="form-control" style="width:160px;">
+                <option value="All">All Statuses</option>
+                <option value="Issued">Issued</option>
+                <option value="Partially Paid">Partially Paid</option>
+                <option value="Paid">Paid</option>
+                <option value="Overdue">Overdue</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Invoices Table -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Invoice #</th>
+                  <th>Customer Account</th>
+                  <th>Issue Date</th>
+                  <th>Due Date</th>
+                  <th class="amount">Total Amount</th>
+                  <th class="amount">Paid Amount</th>
+                  <th class="amount">Balance Due</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="invoices-tbody">
+                <tr><td colspan="9" style="text-align:center; padding:32px; color:var(--text-muted)">Loading invoices...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Create Invoice Modal -->
+  <div class="modal-overlay" id="modal-create-invoice">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title">Create Commercial B2B Invoice</h3>
+        <button class="modal-close" onclick="closeModal('modal-create-invoice')">×</button>
+      </div>
+      <form id="form-create-invoice">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label class="form-label" for="invoice-customer-select">Customer / Buyer Account *</label>
+              <select id="invoice-customer-select" class="form-control" required>
+                <option value="">Loading customer accounts...</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="invoice-issue-date">Issue Date *</label>
+              <input type="date" id="invoice-issue-date" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="invoice-due-date">Payment Due Date *</label>
+              <input type="date" id="invoice-due-date" class="form-control" required />
+            </div>
+          </div>
+
+          <!-- Dynamic Line Items -->
+          <div style="margin-top:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <h4 style="font-size:0.95rem; font-weight:700; color:var(--secondary)">Invoice Line Items (Auto-Deducts Inventory)</h4>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="addInvoiceLineItem()">
+                + Add Item Line
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="items-table">
+                <thead>
+                  <tr>
+                    <th>Item Description / Product SKU</th>
+                    <th style="width:100px;">Qty</th>
+                    <th style="width:140px;">Unit Price (PKR)</th>
+                    <th style="width:140px; text-align:right;">Total</th>
+                    <th style="width:50px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="invoice-items-tbody"></tbody>
+              </table>
+            </div>
+
+            <!-- Invoice Calculation Box -->
+            <div class="invoice-summary-box">
+              <div class="summary-row">
+                <span>Subtotal:</span>
+                <span id="inv-subtotal-disp" style="font-weight:600">Rs. 0</span>
+              </div>
+              <div class="summary-row">
+                <span>Sales Tax / VAT:</span>
+                <input type="number" id="invoice-tax" class="form-control" style="width:120px; text-align:right; padding:4px 8px;" value="0" min="0" oninput="recalcInvoiceTotals()" />
+              </div>
+              <div class="summary-row">
+                <span>Commercial Discount:</span>
+                <input type="number" id="invoice-discount" class="form-control" style="width:120px; text-align:right; padding:4px 8px;" value="0" min="0" oninput="recalcInvoiceTotals()" />
+              </div>
+              <div class="summary-row total">
+                <span>Grand Total Due:</span>
+                <span id="inv-total-disp" style="color:var(--primary)">Rs. 0</span>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top:16px;">
+              <label class="form-label" for="invoice-notes">Terms / Dispatch Notes</label>
+              <textarea id="invoice-notes" class="form-control" placeholder="Goods dispatched via carrier / payment within agreed credit terms."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-create-invoice')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Generate & Issue Invoice</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- View / Print Invoice Modal -->
+  <div class="modal-overlay" id="modal-view-invoice">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title" id="view-inv-title">Commercial Sales Invoice</h3>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="btn btn-accent btn-sm" id="btn-whatsapp-invoice">📱 WhatsApp Invoice</button>
+          <button class="btn btn-secondary btn-sm" onclick="window.print()">🖨️ Print / Save PDF</button>
+          <button class="modal-close" onclick="closeModal('modal-view-invoice')">×</button>
+        </div>
+      </div>
+      <div class="modal-body" id="printable-invoice-area">
+        <!-- Invoice Details Header -->
+        <div style="display:flex; justify-content:space-between; margin-bottom:24px; padding-bottom:16px; border-bottom:2px solid var(--border-color);">
+          <div>
+            <div style="font-size:1.4rem; font-weight:800; color:var(--secondary);" id="view-inv-biz-name">Al-Rehman FMCG Wholesalers</div>
+            <div style="font-size:0.8rem; color:var(--text-muted);" id="view-inv-biz-details">Circular Road Wholesale Market, Lahore • NTN: 4829104-7</div>
+            <div style="margin-top:14px;">
+              <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Billed To:</div>
+              <div style="font-size:1.1rem; font-weight:700; color:var(--secondary);" id="view-inv-customer">Lahore Super Mart</div>
+              <div style="font-size:0.82rem; color:var(--text-muted);" id="view-inv-customer-phone">Phone: 0300-4567891</div>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:1.3rem; font-weight:800; color:var(--primary); font-family:monospace;" id="view-inv-num">INV-2026-0001</div>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">Date: <strong id="view-inv-date">-</strong></div>
+            <div style="font-size:0.85rem; color:var(--danger); margin-top:2px;">Due Date: <strong id="view-inv-due">-</strong></div>
+            <div style="margin-top:10px;"><span class="badge badge-issued" id="view-inv-status">Issued</span></div>
+          </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Item Description</th>
+                <th style="width:100px; text-align:right;">Qty</th>
+                <th style="width:140px;" class="amount">Unit Rate</th>
+                <th style="width:140px;" class="amount">Total Amount</th>
+              </tr>
+            </thead>
+            <tbody id="view-inv-items-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Financial Summary -->
+        <div style="margin-left:auto; max-width:320px; margin-top:16px;">
+          <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.9rem;">
+            <span>Subtotal:</span>
+            <span id="view-inv-subtotal" style="font-weight:600;">Rs. 0</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.9rem;">
+            <span>Tax / VAT:</span>
+            <span id="view-inv-tax">Rs. 0</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.9rem;">
+            <span>Discount:</span>
+            <span id="view-inv-discount">Rs. 0</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:8px 0; border-top:2px solid var(--border-color); font-size:1.15rem; font-weight:800; color:var(--secondary);">
+            <span>Total Payable:</span>
+            <span id="view-inv-total" style="color:var(--primary); font-family:monospace;">Rs. 0</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.95rem; font-weight:700;">
+            <span style="color:var(--danger);">Balance Due:</span>
+            <span id="view-inv-balance" style="color:var(--danger); font-family:monospace;">Rs. 0</span>
+          </div>
+        </div>
+
+        <!-- Remittance & Instant QR Notice -->
+        <div class="print-qr-section" style="margin-top:24px; padding:16px; background:#f8fafc; border-radius:var(--radius-md); border:1px dashed var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-weight:700; font-size:0.9rem; color:var(--secondary);">Remittance Instructions:</div>
+            <div style="font-size:0.8rem; color:var(--text-muted);">Please settle balance via Raast / Bank Wire to: <strong>Meezan Bank Ltd</strong> (IBAN: PK42MEZN000192847102)</div>
+          </div>
+          <div style="text-align:center;">
+            <svg width="70" height="70" viewBox="0 0 100 100" style="background:#fff; padding:4px; border:1px solid #cbd5e1; border-radius:4px;">
+              <path fill="#0f172a" d="M10 10h30v30h-30z M60 10h30v30h-30z M10 60h30v30h-30z M18 18h14v14h-14z M68 18h14v14h-14z M18 68h14v14h-14z M45 10h10v10h-10z M45 45h10v10h-10z M60 60h10v10h-10z M80 60h10v10h-10z M60 80h10v10h-10z M75 75h15v15h-15z"/>
+            </svg>
+            <div style="font-size:0.68rem; color:var(--text-muted); font-weight:600; margin-top:2px;">Scan to Pay via Raast</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-view-invoice')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/validation.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/invoices.js"></script>
+</body>
+</html>

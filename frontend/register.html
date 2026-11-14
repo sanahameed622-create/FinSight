@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Business — FinSight</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f8fafc;
+      padding: 30px 20px;
+    }
+    .auth-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 540px;
+      padding: 36px;
+    }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body class="auth-page">
+
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="brand-logo" style="justify-content:center; margin-bottom:12px;">
+        <div class="brand-icon">F</div>
+        <div class="brand-name" style="color:var(--secondary)">Fin<span>Sight</span></div>
+      </div>
+      <h2 style="font-size:1.4rem; color:var(--secondary); font-weight:700;">Register Business</h2>
+      <p style="color:var(--text-muted); font-size:0.88rem; margin-top:4px;">Set up automated financial reconciliation for your B2B enterprise</p>
+    </div>
+
+    <form id="register-form">
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label class="form-label" for="reg-biz-name">Business / Company Name</label>
+          <input type="text" id="reg-biz-name" class="form-control" placeholder="e.g. Al-Madina FMCG Distributors" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-name">Your Full Name</label>
+          <input type="text" id="reg-name" class="form-control" placeholder="e.g. Tariq Mehmood" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-phone">Phone Number</label>
+          <input type="text" id="reg-phone" class="form-control" placeholder="0300-1234567" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-city">City</label>
+          <select id="reg-city" class="form-control">
+            <option value="Lahore">Lahore</option>
+            <option value="Karachi">Karachi</option>
+            <option value="Faisalabad">Faisalabad</option>
+            <option value="Rawalpindi">Rawalpindi</option>
+            <option value="Islamabad">Islamabad</option>
+            <option value="Multan">Multan</option>
+            <option value="Peshawar">Peshawar</option>
+            <option value="Gujranwala">Gujranwala</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-ntn">NTN / Registration No. (Optional)</label>
+          <input type="text" id="reg-ntn" class="form-control" placeholder="e.g. 4829104-7" />
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label" for="reg-email">Work Email</label>
+          <input type="email" id="reg-email" class="form-control" placeholder="accounts@yourdistributors.pk" required />
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label" for="reg-password">Password</label>
+          <input type="password" id="reg-password" class="form-control" placeholder="At least 6 characters" required />
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:8px;">
+        Create Business Account
+      </button>
+    </form>
+
+    <div style="text-align:center; margin-top:24px; font-size:0.85rem; color:var(--text-muted);">
+      Already have an account? <a href="login.html" style="font-weight:600;">Sign in here</a>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/validation.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        business_name: document.getElementById('reg-biz-name').value.trim(),
+        full_name: document.getElementById('reg-name').value.trim(),
+        phone: document.getElementById('reg-phone').value.trim(),
+        city: document.getElementById('reg-city').value,
+        registration_no: document.getElementById('reg-ntn').value.trim() || null,
+        email: document.getElementById('reg-email').value.trim(),
+        password: document.getElementById('reg-password').value
+      };
+
+      try {
+        const res = await Api.post('/auth/register', payload);
+        Api.setToken(res.access_token);
+        Api.setUser(res.user, res.business_name);
+        showToast('Registration successful! Launching workspace...', 'success');
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 500);
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+  </script>
+</body>
+</html>

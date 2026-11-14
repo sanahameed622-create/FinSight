@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Financial Reports & Statements — FinSight</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="brand-logo">
+          <div class="brand-icon">F</div>
+          <div>
+            <div class="brand-name">Fin<span>Sight</span></div>
+            <div class="business-tag" id="sidebar-business-name">Loading...</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Operations</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="customers.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>Customers & Accounts</span>
+        </a>
+        <a href="invoices.html" class="nav-item">
+          <span class="nav-icon">📄</span>
+          <span>Invoices</span>
+        </a>
+        <a href="payments.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payments & PDCs</span>
+        </a>
+        <a href="inventory.html" class="nav-item">
+          <span class="nav-icon">📦</span>
+          <span>Inventory & Stock</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence</div>
+        <a href="reconciliation.html" class="nav-item">
+          <span class="nav-icon">⚡</span>
+          <span>Reconciliation</span>
+        </a>
+        <a href="simulator.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>Cash Simulator</span>
+        </a>
+        <a href="reports.html" class="nav-item active">
+          <span class="nav-icon">📑</span>
+          <span>Financial Reports</span>
+        </a>
+
+        <div class="nav-section-title">System</div>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-avatar" id="sidebar-user-avatar">MU</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-user-name">Muhammad Usman</div>
+            <div class="user-role" id="sidebar-user-role">ADMIN</div>
+          </div>
+          <button class="btn-logout" id="btn-logout" title="Sign Out">🚪</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="mobile-menu-toggle">☰</button>
+          <div>
+            <h1 class="page-title">Executive Financial Reports</h1>
+            <p class="page-subtitle">Accounts Receivable Aging, Statements of Account, and International Auditing Exports</p>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-secondary btn-sm" onclick="exportReport('invoices')">📥 Invoices CSV</button>
+          <button class="btn btn-secondary btn-sm" onclick="exportReport('payments')">📥 Payments CSV</button>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <!-- Section 1: Accounts Receivable Aging Report -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Accounts Receivable Aging Report</h3>
+              <p style="font-size:0.8rem; color:var(--text-muted)">Breakdown of open customer receivables by maturity buckets</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="exportReport('aging')">📥 Export Aging CSV</button>
+          </div>
+
+          <!-- Aging Summary Buckets -->
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:20px;">
+            <div style="background:#ecfdf5; padding:14px; border-radius:var(--radius-md); border:1px solid #a7f3d0;">
+              <div style="font-size:0.75rem; color:#047857; font-weight:600">Current (0 - 30 Days)</div>
+              <div style="font-size:1.2rem; font-weight:800; color:#065f46; font-family:monospace" id="aging-current-sum">Rs. 0</div>
+            </div>
+            <div style="background:#fffbeb; padding:14px; border-radius:var(--radius-md); border:1px solid #fde68a;">
+              <div style="font-size:0.75rem; color:#b45309; font-weight:600">Overdue (31 - 60 Days)</div>
+              <div style="font-size:1.2rem; font-weight:800; color:#92400e; font-family:monospace" id="aging-30-sum">Rs. 0</div>
+            </div>
+            <div style="background:#fff7ed; padding:14px; border-radius:var(--radius-md); border:1px solid #fed7aa;">
+              <div style="font-size:0.75rem; color:#c2410c; font-weight:600">Overdue (61 - 90 Days)</div>
+              <div style="font-size:1.2rem; font-weight:800; color:#9a3412; font-family:monospace" id="aging-60-sum">Rs. 0</div>
+            </div>
+            <div style="background:#fef2f2; padding:14px; border-radius:var(--radius-md); border:1px solid #fecaca;">
+              <div style="font-size:0.75rem; color:#b91c1c; font-weight:600">Critical (90+ Days)</div>
+              <div style="font-size:1.2rem; font-weight:800; color:#991b1b; font-family:monospace" id="aging-90-sum">Rs. 0</div>
+            </div>
+            <div style="background:#f8fafc; padding:14px; border-radius:var(--radius-md); border:1px solid var(--border-color);">
+              <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600">Total Receivables</div>
+              <div style="font-size:1.2rem; font-weight:800; color:var(--secondary); font-family:monospace" id="aging-grand-total">Rs. 0</div>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Customer Account</th>
+                  <th class="amount">Current (0-30d)</th>
+                  <th class="amount">31 - 60 Days</th>
+                  <th class="amount">61 - 90 Days</th>
+                  <th class="amount">90+ Days</th>
+                  <th class="amount">Total Balance</th>
+                  <th>Risk Level</th>
+                </tr>
+              </thead>
+              <tbody id="aging-report-tbody">
+                <tr><td colspan="7" style="text-align:center; padding:32px; color:var(--text-muted)">Loading aging report...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Section 2: Customer Statement of Account Generator -->
+        <div class="card" style="margin-top:24px;">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Customer Statement of Account</h3>
+              <p style="font-size:0.8rem; color:var(--text-muted)">Generate, print, and WhatsApp official accounts receivable statements</p>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:20px;">
+            <select id="report-khata-customer-select" class="form-control" style="max-width:400px;">
+              <option value="">Loading customer directory...</option>
+            </select>
+            <button class="btn btn-primary" id="btn-fetch-khata">Generate Statement</button>
+          </div>
+
+          <div id="khata-customer-header" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:16px; border-radius:var(--radius-md); border:1px solid var(--border-color); margin-bottom:16px;">
+              <div>
+                <h4 style="font-size:1.1rem; font-weight:700; color:var(--secondary)" id="khata-cust-title">Customer Statement</h4>
+                <div style="display:flex; gap:20px; font-size:0.85rem; margin-top:4px;">
+                  <span>Total Invoiced: <strong id="khata-invoiced-val" style="color:var(--secondary)">Rs. 0</strong></span>
+                  <span>Total Paid: <strong id="khata-paid-val" style="color:var(--accent)">Rs. 0</strong></span>
+                  <span>Net Outstanding Balance: <strong id="khata-outstanding-val" style="color:var(--danger)">Rs. 0</strong></span>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-accent btn-sm" id="btn-whatsapp-report-statement">📱 WhatsApp</button>
+                <button class="btn btn-secondary btn-sm" onclick="window.print()">🖨️ Print / PDF</button>
+                <button class="btn btn-secondary btn-sm" id="btn-export-current-khata">📥 CSV</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Reference</th>
+                    <th>Particulars / Description</th>
+                    <th class="amount">Debit (Billed)</th>
+                    <th class="amount">Credit (Paid)</th>
+                    <th class="amount">Running Ledger Balance</th>
+                  </tr>
+                </thead>
+                <tbody id="khata-statement-tbody"></tbody>
+              </table>
+            </div>
+
+            <!-- Instant QR & Remittance Notice -->
+            <div class="print-qr-section" style="margin-top:20px; padding:16px; background:#f8fafc; border-radius:var(--radius-md); border:1px dashed var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-weight:700; font-size:0.9rem; color:var(--secondary);">Remittance Instructions:</div>
+                <div style="font-size:0.8rem; color:var(--text-muted);">Please settle balance via Raast / Bank Wire to: <strong>Meezan Bank Ltd</strong> (IBAN: PK42MEZN000192847102)</div>
+              </div>
+              <div style="text-align:center;">
+                <svg width="70" height="70" viewBox="0 0 100 100" style="background:#fff; padding:4px; border:1px solid #cbd5e1; border-radius:4px;">
+                  <path fill="#0f172a" d="M10 10h30v30h-30z M60 10h30v30h-30z M10 60h30v30h-30z M18 18h14v14h-14z M68 18h14v14h-14z M18 68h14v14h-14z M45 10h10v10h-10z M45 45h10v10h-10z M60 60h10v10h-10z M80 60h10v10h-10z M60 80h10v10h-10z M75 75h15v15h-15z"/>
+                </svg>
+                <div style="font-size:0.68rem; color:var(--text-muted); font-weight:600; margin-top:2px;">Scan to Pay via Raast</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/validation.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/reports.js"></script>
+</body>
+</html>

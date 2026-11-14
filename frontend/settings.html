@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings — FinSight</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="brand-logo">
+          <div class="brand-icon">F</div>
+          <div>
+            <div class="brand-name">Fin<span>Sight</span></div>
+            <div class="business-tag" id="sidebar-business-name">Loading...</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Operations</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="customers.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>Customers & Accounts</span>
+        </a>
+        <a href="invoices.html" class="nav-item">
+          <span class="nav-icon">📄</span>
+          <span>Invoices</span>
+        </a>
+        <a href="payments.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payments & PDCs</span>
+        </a>
+        <a href="inventory.html" class="nav-item">
+          <span class="nav-icon">📦</span>
+          <span>Inventory & Stock</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence</div>
+        <a href="reconciliation.html" class="nav-item">
+          <span class="nav-icon">⚡</span>
+          <span>Reconciliation</span>
+        </a>
+        <a href="simulator.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>Cash Simulator</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">📑</span>
+          <span>Financial Reports</span>
+        </a>
+
+        <div class="nav-section-title">System</div>
+        <a href="settings.html" class="nav-item active">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-avatar" id="sidebar-user-avatar">MU</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-user-name">Muhammad Usman</div>
+            <div class="user-role" id="sidebar-user-role">ADMIN</div>
+          </div>
+          <button class="btn-logout" id="btn-logout" title="Sign Out">🚪</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="mobile-menu-toggle">☰</button>
+          <div>
+            <h1 class="page-title">Enterprise Settings & System Config</h1>
+            <p class="page-subtitle">Configure business profile, tax rates, and database configuration</p>
+          </div>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Business Profile & Localization</h3>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Enterprise Name</label>
+              <input type="text" class="form-control" id="settings-biz-name" readonly style="background:#f8fafc;" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Active Currency</label>
+              <input type="text" class="form-control" value="PKR (Pakistani Rupee - Rs.)" readonly style="background:#f8fafc;" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Default Credit Terms</label>
+              <input type="text" class="form-control" value="15 Days (FMCG Standard)" readonly style="background:#f8fafc;" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Reconciliation Method</label>
+              <input type="text" class="form-control" value="FIFO (First-In, First-Out) Smart Match" readonly style="background:#f8fafc;" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Backend Architecture & DBMS Engine Status</h3>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:12px; font-size:0.9rem;">
+            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-color);">
+              <span style="color:var(--text-muted)">API Endpoint Server:</span>
+              <span style="font-weight:600; color:var(--secondary)">Python FastAPI 0.162 (ASGI High-Speed)</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-color);">
+              <span style="color:var(--text-muted)">Current Database Layer:</span>
+              <span style="font-weight:600; color:var(--accent)">SQLite 3 (Local Zero-Config) • PostgreSQL Ready</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-color);">
+              <span style="color:var(--text-muted)">ORM / Schema Architecture:</span>
+              <span style="font-weight:600; color:var(--secondary)">SQLAlchemy 2.1 + Pydantic v2 Models</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-color);">
+              <span style="color:var(--text-muted)">Live Health Check:</span>
+              <span id="system-health-badge" class="badge badge-paid">Checking...</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Security & Session Management</h3>
+          </div>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:16px;">
+            Your session is secured using HMAC-SHA256 authenticated JSON Web Tokens (JWT) with salted PBKDF2 password cryptography.
+          </p>
+          <button class="btn btn-danger btn-sm" onclick="handleLogout()">Sign Out of All Devices</button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/validation.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      document.getElementById('settings-biz-name').value = Api.getBusinessName();
+
+      try {
+        const health = await Api.get('/health');
+        const badge = document.getElementById('system-health-badge');
+        if (badge) {
+          badge.textContent = `ONLINE: ${health.app} v${health.version}`;
+        }
+      } catch (err) {
+        const badge = document.getElementById('system-health-badge');
+        if (badge) {
+          badge.className = 'badge badge-overdue';
+          badge.textContent = 'OFFLINE';
+        }
+      }
+    });
+
+    function handleLogout() {
+      Api.clearSession();
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

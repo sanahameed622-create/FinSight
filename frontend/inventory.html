@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory & Stock Management — FinSight</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="brand-logo">
+          <div class="brand-icon">F</div>
+          <div>
+            <div class="brand-name">Fin<span>Sight</span></div>
+            <div class="business-tag" id="sidebar-business-name">Loading...</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Operations</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="customers.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>Customers & Accounts</span>
+        </a>
+        <a href="invoices.html" class="nav-item">
+          <span class="nav-icon">📄</span>
+          <span>Invoices</span>
+        </a>
+        <a href="payments.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payments & PDCs</span>
+        </a>
+        <a href="inventory.html" class="nav-item active">
+          <span class="nav-icon">📦</span>
+          <span>Inventory & Stock</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence</div>
+        <a href="reconciliation.html" class="nav-item">
+          <span class="nav-icon">⚡</span>
+          <span>Reconciliation</span>
+        </a>
+        <a href="simulator.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>Cash Simulator</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">📑</span>
+          <span>Financial Reports</span>
+        </a>
+
+        <div class="nav-section-title">System</div>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-avatar" id="sidebar-user-avatar">MU</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-user-name">Muhammad Usman</div>
+            <div class="user-role" id="sidebar-user-role">ADMIN</div>
+          </div>
+          <button class="btn-logout" id="btn-logout" title="Sign Out">🚪</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="mobile-menu-toggle">☰</button>
+          <div>
+            <h1 class="page-title">Warehouse Inventory & Stock Control</h1>
+            <p class="page-subtitle">Manage wholesale product SKUs, reorder thresholds, and invoice stock deduction</p>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-product')">
+            + Add New Product
+          </button>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <!-- Stock KPI Metrics -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:24px;">
+          <div class="card" style="margin-bottom:0; padding:18px;">
+            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Total Active SKUs</div>
+            <div style="font-size:1.4rem; font-weight:800; color:var(--secondary); font-family:monospace;" id="kpi-total-skus">0</div>
+          </div>
+          <div class="card" style="margin-bottom:0; padding:18px;">
+            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Inventory Valuation (Retail)</div>
+            <div style="font-size:1.4rem; font-weight:800; color:var(--accent); font-family:monospace;" id="kpi-total-valuation">Rs. 0</div>
+          </div>
+          <div class="card" style="margin-bottom:0; padding:18px;">
+            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Low Stock Alerts</div>
+            <div style="font-size:1.4rem; font-weight:800; color:var(--danger); font-family:monospace;" id="kpi-low-stock-count">0</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+          <!-- Filter Bar -->
+          <div class="filter-bar">
+            <div class="search-input-group">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="search-product" class="search-input" placeholder="Search by SKU, product name, or category..." />
+            </div>
+            <div class="filter-actions">
+              <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem; cursor:pointer;">
+                <input type="checkbox" id="filter-low-stock" style="accent-color:var(--danger);" />
+                <span>Show Low Stock Only</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Products Table -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>SKU</th>
+                  <th>Product Description</th>
+                  <th>Category</th>
+                  <th class="amount">Unit Cost</th>
+                  <th class="amount">Selling Price</th>
+                  <th class="amount">Stock on Hand</th>
+                  <th class="amount">Total Asset Value</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="products-tbody">
+                <tr><td colspan="9" style="text-align:center; padding:32px; color:var(--text-muted)">Loading product catalogue...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Add Product Modal -->
+  <div class="modal-overlay" id="modal-add-product">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Add Inventory Product SKU</h3>
+        <button class="modal-close" onclick="closeModal('modal-add-product')">×</button>
+      </div>
+      <form id="form-add-product">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="prod-sku">SKU Code *</label>
+              <input type="text" id="prod-sku" class="form-control" placeholder="e.g. FMCG-OIL-16L" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="prod-category">Category</label>
+              <input type="text" id="prod-category" class="form-control" placeholder="e.g. Edible Oils, Spices" value="General" />
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label" for="prod-name">Product Name & Specifications *</label>
+              <input type="text" id="prod-name" class="form-control" placeholder="e.g. Habib Cooking Oil 16L Tin" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="prod-unit">Unit Type</label>
+              <input type="text" id="prod-unit" class="form-control" placeholder="Carton, Bag, Tin, Box" value="Carton" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="prod-stock">Opening Stock Qty *</label>
+              <input type="number" id="prod-stock" class="form-control" value="50" min="0" step="any" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="prod-cost">Unit Cost (PKR)</label>
+              <input type="number" id="prod-cost" class="form-control" value="0" min="0" step="any" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="prod-price">Wholesale Selling Price (PKR) *</label>
+              <input type="number" id="prod-price" class="form-control" value="0" min="0" step="any" required />
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label" for="prod-reorder">Low Stock Alert Level (Threshold)</label>
+              <input type="number" id="prod-reorder" class="form-control" value="15" min="1" step="any" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-product')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/validation.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/inventory.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.bak
+*.pyd
+
+# Local Database & Secrets
+*.db
+*.sqlite3
+.env
+.venv/
+venv/
+ENV/
+
+# OS Specific
+.DS_Store
+Thumbs.db

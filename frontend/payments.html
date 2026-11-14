@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payments & PDCs — FinSight</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <style>
+    .tab-nav {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+    .tab-btn {
+      padding: 8px 16px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background-color: var(--primary);
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="brand-logo">
+          <div class="brand-icon">F</div>
+          <div>
+            <div class="brand-name">Fin<span>Sight</span></div>
+            <div class="business-tag" id="sidebar-business-name">Loading...</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Operations</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="customers.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>Customers & Accounts</span>
+        </a>
+        <a href="invoices.html" class="nav-item">
+          <span class="nav-icon">📄</span>
+          <span>Invoices</span>
+        </a>
+        <a href="payments.html" class="nav-item active">
+          <span class="nav-icon">💳</span>
+          <span>Payments & PDCs</span>
+        </a>
+        <a href="inventory.html" class="nav-item">
+          <span class="nav-icon">📦</span>
+          <span>Inventory & Stock</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence</div>
+        <a href="reconciliation.html" class="nav-item">
+          <span class="nav-icon">⚡</span>
+          <span>Reconciliation</span>
+        </a>
+        <a href="simulator.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>Cash Simulator</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">📑</span>
+          <span>Financial Reports</span>
+        </a>
+
+        <div class="nav-section-title">System</div>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-avatar" id="sidebar-user-avatar">MU</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-user-name">Muhammad Usman</div>
+            <div class="user-role" id="sidebar-user-role">ADMIN</div>
+          </div>
+          <button class="btn-logout" id="btn-logout" title="Sign Out">🚪</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="mobile-menu-toggle">☰</button>
+          <div>
+            <h1 class="page-title">Payments & Cheques Clearing</h1>
+            <p class="page-subtitle">Record Raast, online transfers, cash, and track Post-Dated Cheques (PDCs)</p>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-secondary btn-sm" onclick="openModal('modal-record-cheque')">
+            + Record Post-Dated Cheque (PDC)
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modal-record-payment')">
+            + Record Direct Payment
+          </button>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <!-- Sub-Tabs Navigation -->
+        <div class="tab-nav">
+          <button class="tab-btn active" id="tab-btn-payments" onclick="switchPaymentTab('payments')">
+            💳 Direct Receipts & Collections
+          </button>
+          <button class="tab-btn" id="tab-btn-cheques" onclick="switchPaymentTab('cheques')">
+            🏦 Post-Dated Cheques (PDC Tracker)
+          </button>
+        </div>
+
+        <!-- Tab 1: Payments Pane -->
+        <div id="pane-payments" class="card">
+          <!-- Filters -->
+          <div class="filter-bar">
+            <div class="search-input-group">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="search-payment" class="search-input" placeholder="Search payment #, ref, or customer..." />
+            </div>
+            <div class="filter-actions">
+              <select id="filter-status" class="form-control" style="width:170px;">
+                <option value="All">All Statuses</option>
+                <option value="Fully Reconciled">Fully Reconciled</option>
+                <option value="Partially Allocated">Partially Allocated</option>
+                <option value="Unallocated">Unallocated Cash</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Payments Table -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Payment #</th>
+                  <th>Customer</th>
+                  <th>Date</th>
+                  <th>Method & Ref</th>
+                  <th class="amount">Total Amount</th>
+                  <th class="amount">Unallocated Cash</th>
+                  <th>Status</th>
+                  <th>Allocations</th>
+                </tr>
+              </thead>
+              <tbody id="payments-tbody">
+                <tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted)">Loading payments...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 2: Cheques (PDC) Pane -->
+        <div id="pane-cheques" class="card" style="display:none;">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Post-Dated Cheques (PDC) Registry</h3>
+              <p style="font-size:0.8rem; color:var(--text-muted)">Monitor upcoming bank maturities and clear cheques directly into customer accounts</p>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Cheque #</th>
+                  <th>Customer / Drawer</th>
+                  <th>Drawee Bank</th>
+                  <th>Received Date</th>
+                  <th>Maturity / Deposit Date</th>
+                  <th class="amount">Cheque Amount</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="cheques-tbody">
+                <tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted)">Loading cheques...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Record Payment Modal -->
+  <div class="modal-overlay" id="modal-record-payment">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Record Direct Payment</h3>
+        <button class="modal-close" onclick="closeModal('modal-record-payment')">×</button>
+      </div>
+      <form id="form-record-payment">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label class="form-label" for="payment-customer-select">Customer Account *</label>
+              <select id="payment-customer-select" class="form-control" required>
+                <option value="">Loading customer accounts...</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="payment-amount">Amount Received *</label>
+              <input type="number" id="payment-amount" class="form-control" placeholder="e.g. 150000" min="1" step="any" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="payment-date">Payment Date *</label>
+              <input type="date" id="payment-date" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="payment-method">Payment Mode</label>
+              <select id="payment-method" class="form-control">
+                <option value="Raast">Raast (Instant Digital Payment)</option>
+                <option value="Bank Transfer">Bank Wire / IBFT</option>
+                <option value="Cash">Cash</option>
+                <option value="Cheque">Cleared Cheque</option>
+                <option value="Pay Order">Bank Pay Order</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="payment-bank">Bank Name (Optional)</label>
+              <input type="text" id="payment-bank" class="form-control" placeholder="e.g. Meezan Bank, HBL" />
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label" for="payment-reference">Reference / Transaction ID</label>
+              <input type="text" id="payment-reference" class="form-control" placeholder="e.g. RAAST-9847291 or TXN-401928" />
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label" for="payment-notes">Remittance Notes</label>
+              <input type="text" id="payment-notes" class="form-control" placeholder="Payment received for weekly order" />
+            </div>
+
+            <!-- Auto FIFO Option -->
+            <div class="form-group full-width" style="margin-top:8px; background:#eff6ff; padding:12px; border-radius:var(--radius-md); border:1px solid #bfdbfe;">
+              <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:600; font-size:0.9rem; color:#1e40af;">
+                <input type="checkbox" id="payment-auto-fifo" checked style="width:18px; height:18px; accent-color:#2563eb;" />
+                <span>Auto-Allocate against oldest outstanding invoices (FIFO)</span>
+              </label>
+              <div style="font-size:0.75rem; color:#3b82f6; margin-left:28px; margin-top:2px;">
+                Automatically matches received funds against earliest open invoices.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-record-payment')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Record Payment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Record Post-Dated Cheque Modal -->
+  <div class="modal-overlay" id="modal-record-cheque">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Record Post-Dated Cheque (PDC)</h3>
+        <button class="modal-close" onclick="closeModal('modal-record-cheque')">×</button>
+      </div>
+      <form id="form-record-cheque">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label class="form-label" for="cheque-customer-select">Customer / Drawer *</label>
+              <select id="cheque-customer-select" class="form-control" required>
+                <option value="">Loading customer accounts...</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cheque-num">Cheque Number *</label>
+              <input type="text" id="cheque-num" class="form-control" placeholder="e.g. 4019284" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cheque-bank">Drawee Bank *</label>
+              <input type="text" id="cheque-bank" class="form-control" placeholder="e.g. Meezan Bank, ABL, HBL" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cheque-amount">Cheque Face Value Amount *</label>
+              <input type="number" id="cheque-amount" class="form-control" placeholder="e.g. 85000" min="1" step="any" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cheque-issue-date">Date Received</label>
+              <input type="date" id="cheque-issue-date" class="form-control" required />
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label" for="cheque-maturity-date">Maturity / Deposit Due Date *</label>
+              <input type="date" id="cheque-maturity-date" class="form-control" required />
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label" for="cheque-notes">Memo / Security Notes</label>
+              <input type="text" id="cheque-notes" class="form-control" placeholder="Post-dated cheque for weekly delivery" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-record-cheque')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Post-Dated Cheque</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- View Payment Allocations Modal -->
+  <div class="modal-overlay" id="modal-view-allocations">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Payment Allocation Breakdown</h3>
+        <button class="modal-close" onclick="closeModal('modal-view-allocations')">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex; justify-content:space-between; margin-bottom:16px; background:#f8fafc; padding:12px; border-radius:var(--radius-md);">
+          <div>
+            <div style="font-size:0.75rem; color:var(--text-muted)">Payment Ref</div>
+            <div style="font-weight:700" id="alloc-payment-num">PAY-2026-0001</div>
+          </div>
+          <div>
+            <div style="font-size:0.75rem; color:var(--text-muted)">Total Paid</div>
+            <div style="font-weight:700; color:var(--secondary)" id="alloc-payment-total">Rs. 0</div>
+          </div>
+          <div>
+            <div style="font-size:0.75rem; color:var(--text-muted)">Unallocated</div>
+            <div style="font-weight:700; color:var(--warning)" id="alloc-payment-unallocated">Rs. 0</div>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Invoice #</th>
+                <th class="amount">Allocated Amount</th>
+                <th>Allocation Date</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody id="allocations-modal-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-view-allocations')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/validation.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/payments.js"></script>
+</body>
+</html>

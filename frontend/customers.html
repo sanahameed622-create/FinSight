@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customers & Accounts — FinSight</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="brand-logo">
+          <div class="brand-icon">F</div>
+          <div>
+            <div class="brand-name">Fin<span>Sight</span></div>
+            <div class="business-tag" id="sidebar-business-name">Loading...</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Operations</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="customers.html" class="nav-item active">
+          <span class="nav-icon">👥</span>
+          <span>Customers & Accounts</span>
+        </a>
+        <a href="invoices.html" class="nav-item">
+          <span class="nav-icon">📄</span>
+          <span>Invoices</span>
+        </a>
+        <a href="payments.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payments & PDCs</span>
+        </a>
+        <a href="inventory.html" class="nav-item">
+          <span class="nav-icon">📦</span>
+          <span>Inventory & Stock</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence</div>
+        <a href="reconciliation.html" class="nav-item">
+          <span class="nav-icon">⚡</span>
+          <span>Reconciliation</span>
+        </a>
+        <a href="simulator.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>Cash Simulator</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">📑</span>
+          <span>Financial Reports</span>
+        </a>
+
+        <div class="nav-section-title">System</div>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-avatar" id="sidebar-user-avatar">MU</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-user-name">Muhammad Usman</div>
+            <div class="user-role" id="sidebar-user-role">ADMIN</div>
+          </div>
+          <button class="btn-logout" id="btn-logout" title="Sign Out">🚪</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="mobile-menu-toggle">☰</button>
+          <div>
+            <h1 class="page-title">Customer Accounts & Receivables Ledger</h1>
+            <p class="page-subtitle">Manage B2B accounts, credit limits, and running balance statements</p>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-customer')">
+            + Add New Customer Account
+          </button>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <div class="card">
+          <!-- Filters -->
+          <div class="filter-bar">
+            <div class="search-input-group">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="search-customer" class="search-input" placeholder="Search customer, company, or phone..." />
+            </div>
+            <div class="filter-actions">
+              <select id="filter-city" class="form-control" style="width:160px;">
+                <option value="">All Cities</option>
+                <option value="Lahore">Lahore</option>
+                <option value="Karachi">Karachi</option>
+                <option value="Faisalabad">Faisalabad</option>
+                <option value="Rawalpindi">Rawalpindi</option>
+                <option value="Islamabad">Islamabad</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Customers Table -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Customer / Account Name</th>
+                  <th>City</th>
+                  <th>Phone</th>
+                  <th class="amount">Credit Limit</th>
+                  <th class="amount">Outstanding Balance</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="customers-tbody">
+                <tr><td colspan="7" style="text-align:center; padding:32px; color:var(--text-muted)">Loading customer accounts...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Add Customer Modal -->
+  <div class="modal-overlay" id="modal-add-customer">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Create Customer Account</h3>
+        <button class="modal-close" onclick="closeModal('modal-add-customer')">×</button>
+      </div>
+      <form id="form-add-customer">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label class="form-label" for="cust-name">Contact Person / Principal *</label>
+              <input type="text" id="cust-name" name="name" class="form-control" placeholder="e.g. Tariq Mehmood" required />
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label" for="cust-company">Retail Store / Enterprise Entity</label>
+              <input type="text" id="cust-company" name="company_name" class="form-control" placeholder="e.g. Lahore Super Mart Gulberg" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cust-phone">Mobile Phone (WhatsApp Enabled) *</label>
+              <input type="text" id="cust-phone" name="phone" class="form-control" placeholder="0300-1234567" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cust-city">City</label>
+              <input type="text" id="cust-city" name="city" class="form-control" value="Lahore" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cust-credit">Credit Limit (PKR)</label>
+              <input type="number" id="cust-credit" name="credit_limit" class="form-control" value="100000" min="0" step="1000" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cust-terms">Payment Terms (Days)</label>
+              <input type="number" id="cust-terms" name="payment_terms_days" class="form-control" value="15" min="1" max="120" />
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label" for="cust-address">Delivery Address / Warehouse No.</label>
+              <input type="text" id="cust-address" name="address" class="form-control" placeholder="Shop # 12, Main Commercial Hub..." />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cust-ntn">Tax / NTN Registration (Optional)</label>
+              <input type="text" id="cust-ntn" name="ntn_number" class="form-control" placeholder="e.g. 1928475-6" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cust-email">Billing Email (Optional)</label>
+              <input type="email" id="cust-email" name="email" class="form-control" placeholder="accounts@retailer.pk" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-customer')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Customer Statement of Account Modal -->
+  <div class="modal-overlay" id="modal-customer-ledger">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="ledger-customer-name">Statement of Account</h3>
+          <p style="font-size:0.8rem; color:var(--text-muted)" id="ledger-customer-company"></p>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="btn btn-accent btn-sm" id="btn-whatsapp-statement" title="Send Statement via WhatsApp">
+            📱 WhatsApp
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="window.print()" title="Print / PDF">
+            🖨️ Print
+          </button>
+          <button class="btn btn-secondary btn-sm" id="btn-export-ledger">📥 CSV</button>
+          <button class="modal-close" onclick="closeModal('modal-customer-ledger')">×</button>
+        </div>
+      </div>
+      <div class="modal-body" id="printable-statement-area">
+        <!-- Summary Cards -->
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-bottom:20px;">
+          <div style="background:#f8fafc; padding:12px; border-radius:var(--radius-md); border:1px solid var(--border-color);">
+            <div style="font-size:0.75rem; color:var(--text-muted)">Total Invoiced Billed</div>
+            <div style="font-size:1.1rem; font-weight:700; color:var(--secondary)" id="ledger-total-invoiced">Rs. 0</div>
+          </div>
+          <div style="background:#f8fafc; padding:12px; border-radius:var(--radius-md); border:1px solid var(--border-color);">
+            <div style="font-size:0.75rem; color:var(--text-muted)">Total Payments Received</div>
+            <div style="font-size:1.1rem; font-weight:700; color:var(--accent)" id="ledger-total-paid">Rs. 0</div>
+          </div>
+          <div style="background:#fef2f2; padding:12px; border-radius:var(--radius-md); border:1px solid #fecaca;">
+            <div style="font-size:0.75rem; color:var(--danger)">Net Outstanding Balance</div>
+            <div style="font-size:1.1rem; font-weight:800; color:var(--danger)" id="ledger-net-balance">Rs. 0</div>
+          </div>
+        </div>
+
+        <!-- Statement Table -->
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Reference</th>
+                <th>Particulars / Description</th>
+                <th class="amount">Debit (Billed)</th>
+                <th class="amount">Credit (Paid)</th>
+                <th class="amount">Running Ledger Balance</th>
+              </tr>
+            </thead>
+            <tbody id="ledger-statement-tbody">
+              <tr><td colspan="7" style="text-align:center; padding:24px; color:var(--text-muted)">Loading statement...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Payment Remittance & Instant QR Notice -->
+        <div class="print-qr-section" style="margin-top:20px; padding:16px; background:#f8fafc; border-radius:var(--radius-md); border:1px dashed var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-weight:700; font-size:0.9rem; color:var(--secondary);">Remittance Instructions:</div>
+            <div style="font-size:0.8rem; color:var(--text-muted);">Please settle balance via Raast / Bank Wire to: <strong>Meezan Bank Ltd</strong> (IBAN: PK42MEZN000192847102)</div>
+          </div>
+          <div style="text-align:center;">
+            <!-- Instant Payment QR Code SVG -->
+            <svg width="70" height="70" viewBox="0 0 100 100" style="background:#fff; padding:4px; border:1px solid #cbd5e1; border-radius:4px;">
+              <path fill="#0f172a" d="M10 10h30v30h-30z M60 10h30v30h-30z M10 60h30v30h-30z M18 18h14v14h-14z M68 18h14v14h-14z M18 68h14v14h-14z M45 10h10v10h-10z M45 45h10v10h-10z M60 60h10v10h-10z M80 60h10v10h-10z M60 80h10v10h-10z M75 75h15v15h-15z"/>
+            </svg>
+            <div style="font-size:0.68rem; color:var(--text-muted); font-weight:600; margin-top:2px;">Scan to Pay via Raast</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-customer-ledger')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/validation.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/customers.js"></script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reconciliation Engine — FinSight</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/forms.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <style>
+    .reconcile-workspace {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .reconcile-column-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border-color);
+    }
+    .reconcile-column-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+    @media (max-width: 900px) {
+      .reconcile-workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="brand-logo">
+          <div class="brand-icon">F</div>
+          <div>
+            <div class="brand-name">Fin<span>Sight</span></div>
+            <div class="business-tag" id="sidebar-business-name">Loading...</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Operations</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="customers.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span>Customers & Accounts</span>
+        </a>
+        <a href="invoices.html" class="nav-item">
+          <span class="nav-icon">📄</span>
+          <span>Invoices</span>
+        </a>
+        <a href="payments.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Payments & PDCs</span>
+        </a>
+        <a href="inventory.html" class="nav-item">
+          <span class="nav-icon">📦</span>
+          <span>Inventory & Stock</span>
+        </a>
+
+        <div class="nav-section-title">Intelligence</div>
+        <a href="reconciliation.html" class="nav-item active">
+          <span class="nav-icon">⚡</span>
+          <span>Reconciliation</span>
+        </a>
+        <a href="simulator.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>Cash Simulator</span>
+        </a>
+        <a href="reports.html" class="nav-item">
+          <span class="nav-icon">📑</span>
+          <span>Financial Reports</span>
+        </a>
+
+        <div class="nav-section-title">System</div>
+        <a href="settings.html" class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-avatar" id="sidebar-user-avatar">MU</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-user-name">Muhammad Usman</div>
+            <div class="user-role" id="sidebar-user-role">ADMIN</div>
+          </div>
+          <button class="btn-logout" id="btn-logout" title="Sign Out">🚪</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="mobile-menu-toggle">☰</button>
+          <div>
+            <h1 class="page-title">Smart Payment Reconciliation Engine</h1>
+            <p class="page-subtitle">Algorithmic FIFO matching and manual payment-to-invoice allocations</p>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-accent btn-sm" id="btn-run-auto-fifo">
+            ⚡ 1-Click Auto-Match (FIFO)
+          </button>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <!-- Top Metrics Bar -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:24px;">
+          <div class="card" style="margin-bottom:0; padding:16px;">
+            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Total Invoiced Billed</div>
+            <div style="font-size:1.3rem; font-weight:800; color:var(--secondary); font-family:monospace;" id="rec-total-billed">Rs. 0</div>
+          </div>
+          <div class="card" style="margin-bottom:0; padding:16px;">
+            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Open Receivables</div>
+            <div style="font-size:1.3rem; font-weight:800; color:var(--primary); font-family:monospace;" id="rec-open-receivables">Rs. 0</div>
+          </div>
+          <div class="card" style="margin-bottom:0; padding:16px;">
+            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Unallocated Cash</div>
+            <div style="font-size:1.3rem; font-weight:800; color:var(--warning); font-family:monospace;" id="rec-unallocated-cash">Rs. 0</div>
+          </div>
+          <div class="card" style="margin-bottom:0; padding:16px;">
+            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Reconciliation Rate</div>
+            <div style="font-size:1.3rem; font-weight:800; color:var(--accent);" id="rec-rate">0%</div>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar" style="background:#fff; padding:16px 20px; border-radius:var(--radius-lg); border:1px solid var(--border-color);">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span style="font-weight:600; font-size:0.9rem; color:var(--secondary)">Account Filter:</span>
+            <select id="filter-reconcile-customer" class="form-control" style="width:280px;">
+              <option value="">All Accounts (Global)</option>
+            </select>
+          </div>
+          <div>
+            <span style="font-size:0.85rem; color:var(--text-muted)">
+              FIFO algorithm pairs oldest payments with earliest open invoices chronologically.
+            </span>
+          </div>
+        </div>
+
+        <!-- Visual Dual-Column Reconciliation Workspace -->
+        <div class="reconcile-workspace" style="margin-top:24px;">
+          <!-- Left Column: Unallocated Payments -->
+          <div>
+            <div class="reconcile-column-header">
+              <span class="reconcile-column-title">💳 Unallocated Cash Received</span>
+              <span style="font-size:0.8rem; color:var(--text-muted)">Unallocated Deposits in Bank</span>
+            </div>
+            <div id="unallocated-payments-list">
+              <p style="color:var(--text-muted)">Loading unallocated payments...</p>
+            </div>
+          </div>
+
+          <!-- Right Column: Open Invoices -->
+          <div>
+            <div class="reconcile-column-header">
+              <span class="reconcile-column-title">📄 Outstanding Invoices Due</span>
+              <span style="font-size:0.8rem; color:var(--text-muted)">Unpaid / Overdue Bills</span>
+            </div>
+            <div id="open-invoices-list">
+              <p style="color:var(--text-muted)">Loading open invoices...</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Manual Reconciliation Modal -->
+  <div class="modal-overlay" id="modal-manual-reconcile">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Manual Payment Allocation</h3>
+          <p style="font-size:0.8rem; color:var(--text-muted)">Match funds from payment against specific customer invoices</p>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-manual-reconcile')">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:var(--radius-md); padding:14px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-size:0.75rem; color:#b45309">Payment Reference</div>
+            <div style="font-weight:700; color:#78350f" id="manual-rec-pay-num">PAY-2026-0001</div>
+            <div style="font-size:0.8rem; color:#92400e" id="manual-rec-customer">Lahore Super Mart</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.75rem; color:#b45309">Available Unallocated Amount</div>
+            <div style="font-size:1.3rem; font-weight:800; color:#b45309; font-family:monospace" id="manual-rec-amount">Rs. 0</div>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:12px; color:var(--secondary)">Select Invoices to Apply Payment:</h4>
+        <div id="manual-rec-invoices-container" style="max-height:300px; overflow-y:auto; border:1px solid var(--border-color); border-radius:var(--radius-md);">
+          <!-- Invoices populated dynamically -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-manual-reconcile')">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btn-submit-manual-rec">Apply Allocations</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/validation.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/reconciliation.js"></script>
+</body>
+</html>
