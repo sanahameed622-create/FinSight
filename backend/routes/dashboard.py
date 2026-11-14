@@ -7,6 +7,7 @@ from ..models import Invoice, Payment, Customer, ActivityLog, User
 from ..dependencies import get_current_user
 from ..services.report_service import ReportService
 from ..services.ai_insights_service import AIInsightsService
+from ..seeder import seed_sample_business_data
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
@@ -129,4 +130,21 @@ def get_dashboard_stats(
         },
         "ai_insights": ai_data,
         "recent_activities": recent_logs
+    }
+
+@router.post("/load-sample-data")
+def load_sample_data(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    cust_count = db.query(Customer).filter(Customer.business_id == current_user.business_id).count()
+    if cust_count > 0:
+        return {
+            "success": False,
+            "message": "Sample data is already present in your workspace."
+        }
+    seed_sample_business_data(db, current_user.business_id, current_user.id)
+    return {
+        "success": True,
+        "message": "Sample Pakistani B2B FMCG data (customers, products, invoices, and cheques) loaded successfully!"
     }

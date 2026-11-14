@@ -15,6 +15,17 @@ async function loadDashboard() {
     document.getElementById('kpi-overdue').textContent = formatPKR(data.kpis.overdue_receivables);
     document.getElementById('kpi-unallocated').textContent = formatPKR(data.kpis.unallocated_cash);
 
+    // Show/Hide Sample Data Banner if workspace has zero customers
+    const bannerEl = document.getElementById('sample-data-banner');
+    const topBtn = document.getElementById('btn-topbar-sample');
+    if (data.kpis.active_customers_count === 0 && data.kpis.total_receivables === 0) {
+      if (bannerEl) bannerEl.style.display = 'block';
+      if (topBtn) topBtn.style.display = 'inline-flex';
+    } else {
+      if (bannerEl) bannerEl.style.display = 'none';
+      if (topBtn) topBtn.style.display = 'none';
+    }
+
     // 2. AI Financial Intelligence & Health
     renderAIInsights(data.ai_insights);
 
@@ -180,6 +191,43 @@ function renderRecentActivities(activities) {
       </div>
     </div>
   `).join('');
+}
+
+async function loadSampleFMCGData() {
+  const btn = document.getElementById('btn-banner-load-sample');
+  const topBtn = document.getElementById('btn-topbar-sample');
+  
+  if (!confirm('Would you like to populate your workspace with sample Pakistani FMCG distributors (Lahore Super Mart, Madina Cash & Carry), stock products, invoices, and post-dated cheques?')) {
+    return;
+  }
+
+  try {
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span><span>Loading Sample Data...</span>';
+    }
+    if (topBtn) {
+      topBtn.disabled = true;
+      topBtn.innerHTML = '<span>⏳</span><span>Loading...</span>';
+    }
+
+    const res = await Api.post('/dashboard/load-sample-data', {});
+    showToast(res.message, res.success ? 'success' : 'info');
+    
+    // Reload dashboard with fresh sample data
+    await loadDashboard();
+  } catch (err) {
+    showToast(err.message || 'Failed to load sample data', 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<span>⚡</span><span>Load Sample FMCG Data</span>';
+    }
+    if (topBtn) {
+      topBtn.disabled = false;
+      topBtn.innerHTML = '<span>✨</span><span>Load Sample Data</span>';
+    }
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -142,6 +142,19 @@
 
         <div class="card">
           <div class="card-header">
+            <h3 class="card-title">Demo & Sample FMCG Data Management</h3>
+          </div>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:16px;">
+            Populate your workspace with realistic Pakistani B2B wholesale FMCG distributors (Lahore Super Mart, Madina Cash & Carry, etc.), stock items (Dalda, Tapal Danedar), invoices, and post-dated cheques to demonstrate system features.
+          </p>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <button id="btn-settings-load-sample" class="btn btn-secondary btn-sm" onclick="loadSettingsSampleData()">✨ Load Sample FMCG Data</button>
+            <span id="sample-data-status" style="font-size:0.88rem; color:var(--text-muted);"></span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
             <h3 class="card-title">Security & Session Management</h3>
           </div>
           <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:16px;">
@@ -178,6 +191,34 @@
     function handleLogout() {
       Api.clearSession();
       window.location.href = 'login.html';
+    }
+
+    async function loadSettingsSampleData() {
+      const btn = document.getElementById('btn-settings-load-sample');
+      const status = document.getElementById('sample-data-status');
+      
+      if (!confirm('Populate workspace with sample Pakistani FMCG distributors, invoices, products, and cheques?')) {
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Loading...';
+      status.textContent = 'Generating sample records...';
+      status.style.color = 'var(--text-muted)';
+
+      try {
+        const res = await Api.post('/dashboard/load-sample-data', {});
+        status.textContent = res.message;
+        status.style.color = res.success ? '#10b981' : '#f59e0b';
+        showToast(res.message, res.success ? 'success' : 'info');
+      } catch (err) {
+        status.textContent = err.message || 'Failed to load sample data';
+        status.style.color = '#ef4444';
+        showToast(err.message || 'Error loading sample data', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '✨ Load Sample FMCG Data';
+      }
     }
   </script>
 </body>
