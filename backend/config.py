@@ -14,6 +14,10 @@ class Settings(BaseModel):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     
+    # Environment & Demo Seeding (Disabled by default in production)
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "production")
+    SEED_DEMO_DATA: bool = os.getenv("SEED_DEMO_DATA", "false").lower() in ("true", "1", "yes")
+    
     # Currency & Localization Defaults for Pakistani FMCG / B2B market
     DEFAULT_CURRENCY: str = "PKR"
     DEFAULT_TAX_RATE: float = 0.0  # Common default for wholesale goods (can be set per invoice)

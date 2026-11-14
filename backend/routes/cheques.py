@@ -99,7 +99,10 @@ def update_cheque_status(
     # If status becomes "Cleared", automatically record as cleared Payment and auto-reconcile FIFO!
     if new_status == "Cleared" and old_status != "Cleared":
         pay_count = db.query(Payment).filter(Payment.business_id == current_user.business_id).count()
-        pay_num = f"PAY-CHQ-{date.today().year}-{pay_count + 1:04d}"
+        pay_num = f"PAY-CHQ-{current_user.business_id:03d}-{date.today().year}-{pay_count + 1:04d}"
+        while db.query(Payment).filter(Payment.payment_number == pay_num).first():
+            pay_count += 1
+            pay_num = f"PAY-CHQ-{current_user.business_id:03d}-{date.today().year}-{pay_count + 1:04d}"
 
         cleared_payment = Payment(
             business_id=current_user.business_id,

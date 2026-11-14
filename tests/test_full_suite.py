@@ -1,4 +1,5 @@
 import sys
+import time
 from pathlib import Path
 from datetime import date, timedelta
 
@@ -17,37 +18,60 @@ def run_deep_verification():
     print("=" * 60)
 
     # -------------------------------------------------------------
-    # Test Group 1: Authentication & Access Control
+    # Test Group 1: Dynamic Authentication & Zero-Backdoor Security
     # -------------------------------------------------------------
-    print("\n--- [Group 1: Authentication & Security Boundaries] ---")
+    print("\n--- [Group 1: Authentication & Zero-Backdoor Security Boundaries] ---")
     
+    suite_email = f"suite.admin.{int(time.time())}@securetest.local"
+    suite_password = "SecureVerificationKey!99"
+
+    # 1.0 Register dynamic test tenant
+    r = client.post("/api/auth/register", json={
+        "full_name": "Suite Administrator",
+        "email": suite_email,
+        "password": suite_password,
+        "phone": "+92 300 1122334",
+        "business_name": "FinSight Enterprise Ltd",
+        "city": "Lahore",
+        "registration_no": "NTN-1234567-8"
+    })
+    assert r.status_code == 200, f"Registration failed: {r.text}"
+    token = r.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+    print("[PASS] 1.0 Dynamic business tenant registration successful.")
+
     # 1.1 Valid Login
-    r = client.post("/api/auth/login", json={"email": "admin@finsight.pk", "password": "admin123"})
+    r = client.post("/api/auth/login", json={"email": suite_email, "password": suite_password})
     assert r.status_code == 200, f"Valid login failed: {r.text}"
     token = r.json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
     print("[PASS] 1.1 Correct credentials grant valid JWT bearer token.")
 
     # 1.2 Invalid Login (Wrong password)
-    r = client.post("/api/auth/login", json={"email": "admin@finsight.pk", "password": "wrongpassword"})
+    r = client.post("/api/auth/login", json={"email": suite_email, "password": "wrongpassword"})
     assert r.status_code == 401, "Security breach: invalid password accepted"
     print("[PASS] 1.2 Invalid password rejected with HTTP 401 Unauthorized.")
 
-    # 1.3 Unauthorized API Request
+    # 1.3 Zero-Backdoor Check: Verify unseeded / unauthorized accounts cannot log in
+    r = client.post("/api/auth/login", json={"email": "unregistered.admin@domain.com", "password": "SamplePassword123!"})
+    assert r.status_code == 401, "Security breach: unregistered account permitted access!"
+    print("[PASS] 1.3 Zero-Backdoor confirmed: Unauthorized credentials strictly rejected with HTTP 401.")
+
+    # 1.4 Unauthorized API Request
     r = client.get("/api/dashboard/stats")
     assert r.status_code == 401, "Security breach: unauthenticated access to stats allowed"
-    print("[PASS] 1.3 Protected endpoints block requests without Authorization header.")
+    print("[PASS] 1.4 Protected endpoints block requests without Authorization header.")
 
-    # 1.4 Invalid Token
+    # 1.5 Invalid Token
     r = client.get("/api/dashboard/stats", headers={"Authorization": "Bearer invalid.fake.token"})
     assert r.status_code == 401, "Security breach: malformed token accepted"
-    print("[PASS] 1.4 Malformed or forged JWT tokens rejected.")
+    print("[PASS] 1.5 Malformed or forged JWT tokens rejected.")
 
     # -------------------------------------------------------------
     # Test Group 2: Business & Multi-Tenancy Onboarding
     # -------------------------------------------------------------
     print("\n--- [Group 2: Tenant Isolation & Onboarding] ---")
-    new_email = f"test.distributor.{date.today().strftime('%Y%m%d%H%M%S')}@example.com"
+    new_email = f"test.distributor.{int(time.time()) + 1}@example.com"
     r = client.post("/api/auth/register", json={
         "full_name": "Kashif Enterprises",
         "email": new_email,
@@ -91,7 +115,7 @@ def run_deep_verification():
     print("\n--- [Group 4: Inventory Auto-Deduction & Invoicing] ---")
     
     # 4.1 Create test product with known stock
-    test_sku = f"TEST-OIL-{date.today().strftime('%H%M%S')}"
+    test_sku = f"TEST-OIL-{int(time.time())}"
     r = client.post("/api/products", json={
         "sku": test_sku,
         "name": f"Premium Sunflower Oil 5L ({test_sku})",
@@ -188,7 +212,7 @@ def run_deep_verification():
     # 6.1 Record PDC for the remaining 50,000 balance
     r = client.post("/api/cheques", json={
         "customer_id": test_cust_id,
-        "cheque_number": f"CHQ-{date.today().strftime('%S%f')[:6]}",
+        "cheque_number": f"CHQ-{int(time.time()) % 1000000}",
         "bank_name": "Meezan Bank Ltd",
         "amount": 50000.0,
         "issue_date": date.today().isoformat(),

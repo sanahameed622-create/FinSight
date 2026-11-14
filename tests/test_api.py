@@ -1,4 +1,5 @@
 import sys
+import time
 from pathlib import Path
 
 # Add project root to path
@@ -7,6 +8,8 @@ sys.path.insert(0, str(base))
 
 from starlette.testclient import TestClient
 from backend.main import app
+from backend.database import SessionLocal
+from backend.seeder import seed_sample_business_data
 
 def run_all_tests():
     client = TestClient(app)
@@ -16,12 +19,32 @@ def run_all_tests():
     assert r.status_code == 200, f"Health check failed: {r.text}"
     print("[PASS] 1. Health check:", r.json())
 
-    # 2. Test Login
-    r = client.post("/api/auth/login", json={"email": "admin@finsight.pk", "password": "admin123"})
-    assert r.status_code == 200, f"Login failed: {r.text}"
-    token = r.json()["access_token"]
+    # 2. Register Dynamic Secure Tenant
+    test_email = f"test.api.{int(time.time())}@securetest.local"
+    test_password = "SecureVerificationKey!99"
+    r = client.post("/api/auth/register", json={
+        "full_name": "API Verification Admin",
+        "email": test_email,
+        "password": test_password,
+        "phone": "+92 300 0000000",
+        "business_name": "API Verification Hub Ltd",
+        "city": "Lahore"
+    })
+    assert r.status_code == 200, f"Registration failed: {r.text}"
+    auth_data = r.json()
+    token = auth_data["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
-    print("[PASS] 2. Login successful. Token generated.")
+    biz_id = auth_data["user"]["business_id"]
+    user_id = auth_data["user"]["id"]
+
+    # Seed sample business items for this tenant
+    with SessionLocal() as db:
+        seed_sample_business_data(db, business_id=biz_id, user_id=user_id)
+
+    # Test Login
+    r = client.post("/api/auth/login", json={"email": test_email, "password": test_password})
+    assert r.status_code == 200, f"Login failed: {r.text}"
+    print("[PASS] 2. Login successful with dynamic credentials. Token generated.")
 
     # 3. Test Profile
     r = client.get("/api/auth/me", headers=headers)
@@ -46,12 +69,14 @@ def run_all_tests():
     r = client.get("/api/invoices", headers=headers)
     assert r.status_code == 200
     invoices = r.json()
+    assert len(invoices) >= 5
     print(f"[PASS] 6. Retrieved {len(invoices)} invoices.")
 
     # 7. Test Payments
     r = client.get("/api/payments", headers=headers)
     assert r.status_code == 200
     payments = r.json()
+    assert len(payments) >= 2
     print(f"[PASS] 7. Retrieved {len(payments)} payments.")
 
     # 8. Test FIFO Auto-Reconciliation

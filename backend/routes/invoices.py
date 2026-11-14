@@ -12,7 +12,11 @@ router = APIRouter(prefix="/invoices", tags=["Invoices"])
 
 def generate_invoice_number(db: Session, business_id: int) -> str:
     count = db.query(Invoice).filter(Invoice.business_id == business_id).count()
-    return f"INV-{date.today().year}-{count + 1:04d}"
+    candidate = f"INV-{business_id:03d}-{date.today().year}-{count + 1:04d}"
+    while db.query(Invoice).filter(Invoice.invoice_number == candidate).first():
+        count += 1
+        candidate = f"INV-{business_id:03d}-{date.today().year}-{count + 1:04d}"
+    return candidate
 
 @router.get("", response_model=List[InvoiceResponse])
 def get_invoices(

@@ -12,7 +12,11 @@ router = APIRouter(prefix="/payments", tags=["Payments"])
 
 def generate_payment_number(db: Session, business_id: int) -> str:
     count = db.query(Payment).filter(Payment.business_id == business_id).count()
-    return f"PAY-{date.today().year}-{count + 1:04d}"
+    candidate = f"PAY-{business_id:03d}-{date.today().year}-{count + 1:04d}"
+    while db.query(Payment).filter(Payment.payment_number == candidate).first():
+        count += 1
+        candidate = f"PAY-{business_id:03d}-{date.today().year}-{count + 1:04d}"
+    return candidate
 
 @router.get("", response_model=List[PaymentResponse])
 def get_payments(

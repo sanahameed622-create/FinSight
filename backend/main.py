@@ -25,9 +25,10 @@ from .seeder import seed_demo_data
 # Create DB Tables
 Base.metadata.create_all(bind=engine)
 
-# Seed initial demo data
-with SessionLocal() as db_session:
-    seed_demo_data(db_session)
+# Seed initial demo data only if explicitly enabled in environment (Disabled by default in production)
+if settings.SEED_DEMO_DATA:
+    with SessionLocal() as db_session:
+        seed_demo_data(db_session)
 
 # Initialize FastAPI App
 app = FastAPI(
