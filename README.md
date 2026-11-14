@@ -117,7 +117,7 @@ python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ### 4. Access URLs
 * **Web Portal:** [http://127.0.0.1:8000](http://127.0.0.1:8000)
 * **Swagger API Documentation:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-* **Demo Credentials:** `admin@finsight.pk` / `admin123` *(or click "Fill Demo" on the sign-in page)*
+* **Account Access:** Register your business account at `/register.html` or sign in via `/login.html`
 
 ---
 
